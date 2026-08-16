@@ -4,7 +4,7 @@ import { Crown, Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 
 import useAuth from "../hooks/useAuth";
-import { USER_ROLES } from "../utils/rolePermissions";
+import { USER_ROLES, normalizeRole } from "../utils/rolePermissions";
 
 const SuperAdminLogin = () => {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const SuperAdminLogin = () => {
     try {
       const loggedInUser = await login(formData, "/auth/login"); // Endpoint remains the same
 
-      if (loggedInUser?.role !== USER_ROLES.SUPER_ADMIN) {
+      if (normalizeRole(loggedInUser?.role) !== USER_ROLES.SUPER_ADMIN) {
         await logout({ silent: true }); // Prevent wrong role access[cite: 19]
         const message = "This login page is only for Super Admin accounts.";
         setError(message);

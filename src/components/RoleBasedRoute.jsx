@@ -1,19 +1,19 @@
 import { Navigate } from "react-router-dom";
 import useAuth from "../hooks/useAuth";
+import Loader from "./Loader";
+import { normalizeRole } from "../utils/rolePermissions";
 
 const RoleBasedRoute = ({ allowedRoles = [], children }) => {
   const { user, loading } = useAuth();
 
   if (loading) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-base">
-        <div className="w-8 h-8 border-4 border-structural/20 border-t-accent rounded-full animate-spin mb-4"></div>
-        <p className="text-structural text-sm font-medium">Loading role access...</p>
-      </div>
-    );
+    return <Loader text="Loading role access..." />;
   }
 
-  if (!user || !allowedRoles.includes(user.role)) {
+  const normalizedUserRole = normalizeRole(user?.role);
+  const normalizedAllowedRoles = allowedRoles.map((role) => normalizeRole(role));
+
+  if (!user || !normalizedAllowedRoles.includes(normalizedUserRole)) {
     return <Navigate to="/" replace />;
   }
 

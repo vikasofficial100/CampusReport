@@ -4,7 +4,7 @@ import { Camera, ShieldCheck, Trash2, UserPlus, Mail, Lock, Phone } from "lucide
 import toast from "react-hot-toast";
 
 import useAuth from "../hooks/useAuth";
-import { getDashboardPathByRole, USER_ROLES } from "../utils/rolePermissions";
+import { getDashboardPathByRole, normalizeRole, USER_ROLES } from "../utils/rolePermissions";
 import { uploadProfileImage } from "../services/uploadService";
 
 const Register = () => {
@@ -100,7 +100,7 @@ const Register = () => {
       }
 
       // Admin registration pending approval logic[cite: 11]
-      if (registeredUser.role === USER_ROLES.ADMIN) {
+      if (normalizeRole(registeredUser.role) === USER_ROLES.ADMIN) {
         await logout({ silent: true });
         toast.success("Admin request submitted. Please wait for Super Admin approval.");
         navigate("/admin-login", { replace: true });

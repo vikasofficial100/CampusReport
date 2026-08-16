@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import useAuth from "../hooks/useAuth";
-import { getDashboardPathByRole, roleLabels } from "../utils/rolePermissions";
+import { getDashboardPathByRole, normalizeRole, roleLabels } from "../utils/rolePermissions";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -21,6 +21,7 @@ const Navbar = () => {
   
   const dashboardPath = user ? getDashboardPathByRole(user.role) : "/dashboard";
   const avatarLetter = user?.name?.charAt(0)?.toUpperCase() || "U";
+  const normalizedRole = normalizeRole(user?.role);
 
   const handleLogout = async () => {
     await logout();
@@ -49,26 +50,30 @@ const Navbar = () => {
             <NavLink to={dashboardPath} className="flex items-center gap-1.5 text-sm font-medium text-structural hover:text-structural-muted transition-colors" onClick={() => setOpen(false)}><LayoutDashboard size={16} /> Dashboard</NavLink>
             <NavLink to="/profile-settings" className="flex items-center gap-1.5 text-sm font-medium text-structural hover:text-structural-muted transition-colors" onClick={() => setOpen(false)}><Settings size={16} /> Settings</NavLink>
             
-            <div className="flex items-center gap-3 pl-4 border-l border-border">
+            <div className="flex items-center gap-3 pl-4 md:border-l md:border-border">
               <div className="flex items-center gap-2">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-structural/10 text-structural font-semibold text-sm">
-                  {avatarLetter}
-                </span>
-                <div className="flex flex-col">
+                {user?.profileImage ? (
+                  <img src={user.profileImage} alt="profile" className="w-8 h-8 rounded-full object-cover border border-border" />
+                ) : (
+                  <span className="flex items-center justify-center w-8 h-8 rounded-full bg-structural/10 text-structural font-semibold text-sm">
+                    {avatarLetter}
+                  </span>
+                )}
+                <div className="flex flex-col text-left">
                   <span className="text-sm font-semibold text-structural leading-none">{user?.name}</span>
-                  <span className="text-xs text-structural-muted mt-1">{roleLabels[user?.role] || user?.role}</span>
+                  <span className="text-xs text-structural-muted mt-1 capitalize">{roleLabels[normalizedRole] || user?.role}</span>
                 </div>
               </div>
-              <button onClick={handleLogout} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-structural hover:text-error transition-colors">
+              <button onClick={handleLogout} className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-structural hover:text-error transition-colors ml-2">
                 <LogOut size={16} />
               </button>
             </div>
           </>
         ) : (
-          <div className="flex flex-wrap items-center gap-3 pl-4 border-l border-border">
+          <div className="flex flex-wrap justify-center items-center gap-3 md:pl-4 md:border-l md:border-border">
             <Link to="/login" className="px-4 py-2 text-sm font-medium text-structural hover:text-structural-muted transition-colors">Student Login</Link>
-            <Link to="/admin-login" className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-structural border border-border rounded-[10px] hover:bg-base-alt transition-colors"><Building2 size={16} /> Admin</Link>
-            <Link to="/super-admin-login" className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-structural border border-border rounded-[10px] hover:bg-base-alt transition-colors"><Crown size={16} /> Super Admin</Link>
+            <Link to="/admin-login" className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-structural border border-border rounded-[10px] hover:bg-white transition-colors"><Building2 size={16} /> Admin</Link>
+            <Link to="/super-admin-login" className="flex items-center gap-1.5 px-4 py-2 text-sm font-medium text-structural border border-border rounded-[10px] hover:bg-white transition-colors"><Crown size={16} /> Super Admin</Link>
             <Link to="/register" className="px-5 py-2 text-sm font-semibold text-white bg-accent rounded-[10px] shadow-sm hover:bg-accent-hover transition-colors">Register</Link>
           </div>
         )}

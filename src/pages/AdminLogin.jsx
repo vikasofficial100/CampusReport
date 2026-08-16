@@ -4,7 +4,7 @@ import { Building2, Mail, Lock } from "lucide-react";
 import toast from "react-hot-toast";
 
 import useAuth from "../hooks/useAuth";
-import { USER_ROLES } from "../utils/rolePermissions";
+import { USER_ROLES, normalizeRole } from "../utils/rolePermissions";
 
 const AdminLogin = () => {
   const navigate = useNavigate();
@@ -34,7 +34,7 @@ const AdminLogin = () => {
     try {
       const loggedInUser = await login(formData, "/auth/login"); // Endpoint remains the same
 
-      if (loggedInUser?.role !== USER_ROLES.ADMIN) {
+      if (normalizeRole(loggedInUser?.role) !== USER_ROLES.ADMIN) {
         await logout({ silent: true }); // Prevent wrong role access[cite: 17]
         const message = "This login page is only for Admin accounts.";
         setError(message);
